@@ -3,7 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def sdf(sT, t0, tmax, dt, sigma):
+def sdf(sT, t0= None, tmax= None, dt= 1.0, sigma= 100.0):
+    if t0 is None:
+        t0= np.min(sT)
+    if tmax is None:
+        tmax= np.max(sT)
     tleft= t0-4*sigma
     tright= tmax+4*sigma
     n= int((tright-tleft)/dt)
@@ -20,19 +24,21 @@ def sdf(sT, t0, tmax, dt, sigma):
                 right= int((t-tleft+kwdt)/dt)
                 if left >= 0 and right <= n:
                     sdf[left:right]+=x
-           
-    return sdf
-                  
+
+    t= np.arange(t0, tmax, dt)
+    start= int(4*sigma/dt)
+    stop= start+len(t)
+    the_sdf= {
+        "t": t,
+        "sdf": sdf[start:stop]
+    }
+    return the_sdf
 
 
-
-
-
-# Parameters
+# Basic neuron Parameters
 
 Cm = 1*nfarad
 gl = 0.00018685*msiemens
-
 El = -63.563*mV
 EK = -95*mV
 ENa = 50*mV
@@ -43,48 +49,29 @@ I_noise= 1*namp*dt**0.5  # note: not sure this is rescaling correctly for differ
 I_base= 0.4*namp
 I_off= I_base
 VT = -65*mV
+
+# Adaptation M-current parameters
 pM1 = 0.1
 pM2 = 0*mV
 pM3 = 10*mV
 pM4 = 0.001
 pM5 = -30*mV
 pM6 = -10*mV
-g_M= 3e-5*msiemens
-cmid= -3   # log concentration of mid-activation
-g_r= 1e-5*msiemens
+g_M= 6e-5*msiemens
+
+# receptor current parameters
+cmid= -1.5  # log10 concentration of mid-activation
+cslope= 0.8  # log10 concentration slope of activation
+g_r= 2e-4*msiemens
+
+# odour parameters
 conc_a= 0
 conc_b= 0
 
-# sensillum
-gl_sl = 0.001*msiemens
-El_sl = 40*mV
-Cm_sl = 50*nfarad
-
-"""
-v_a= np.arange(-100,100,0.1)*mV
-plt.figure()
-plt.plot(v_a,pM1/(1+exp((pM2-v_a)/pM3)))
-plt.plot(v_a,pM4/(1+exp((pM5-v_a)/pM6)))
-plt.show()
-exit(1)
-"""
-
-"""
-area = 20000*umetre**2
-Cm = (1*ufarad*cm**-2) * area
-gl = (5e-5*siemens*cm**-2) * area  #(5e-5*siemens*cm**-2) * area
-
-El = -60*mV
-EK = -90*mV
-ENa = 50*mV
-g_na = (100*msiemens*cm**-2) * area
-g_kd = (30*msiemens*cm**-2) * area
-dt= 0.01*msecond
-I_noise= 5e-1*namp*dt**0.5 # (5e-3*namp*dt**0.5)  # note: not rescaling this to be valid for different timesteps
-I_off= -0.035*namp
-VT = -63*mV
-"""
-
+# sensillum parameters
+gl_sl = 0.01*msiemens
+El_sl = -30*mV
+Cm_sl = 100*nfarad
 
 # The model
 eqs = Equations('''
@@ -107,7 +94,7 @@ alpha_n_a = 0.032*(mV**-1)*5*mV/exprel((15*mV-v_a+VT)/(5*mV))/ms : Hz
 beta_n_a = .5*exp((10*mV-v_a+VT)/(40*mV))/ms : Hz
 alpha_M_a = pM1/(1+exp((pM2-v_a)/pM3))/ms : Hz
 beta_M_a = pM4/(1+exp((pM5-v_a)/pM6))/ms : Hz
-s_r_a = 1.0/(1.0+exp((cmid-log10(conc_a))/2)) : 1
+s_r_a = 1.0/(1.0+exp((cmid-log10(conc_a))*cslope)) : 1
 
 dv_b/dt = (gl*(El-v_b)-
          g_na*(m_b*m_b*m_b)*h_b*(v_b-ENa)-
@@ -128,68 +115,25 @@ alpha_n_b = 0.032*(mV**-1)*5*mV/exprel((15*mV-v_b+VT)/(5*mV))/ms : Hz
 beta_n_b = .5*exp((10*mV-v_b+VT)/(40*mV))/ms : Hz
 alpha_M_b = pM1/(1+exp((pM2-v_b)/pM3))/ms : Hz
 beta_M_b = pM4/(1+exp((pM5-v_b)/pM6))/ms : Hz
-s_r_b= 1/(1+exp((cmid-log10(conc_b))/2)) : 1
+s_r_b= 1/(1+exp((cmid-log10(conc_b))*cslope)) : 1
 
 dv_sl/dt = gl_sl*(El_sl-v_sl)/Cm_sl+(g_r*s_r_a*(v_a-ENa-v_sl)+g_r*s_r_b*(v_b-ENa-v_sl))/Cm : volt
 ''')
 
-P = NeuronGroup(1, model=eqs, threshold='v_a>-20*mV', events={'b_spike': '(v_b>-20*mV) and (refr_b <= 0*ms)'},refractory=3*ms,
-                method='milstein',dt=dt)
+sensillum = NeuronGroup(1, model=eqs, threshold='v_a>-20*mV', events={'b_spike': '(v_b>-20*mV) and (refr_b <= 0*ms)'},
+                        refractory=3*ms, method='milstein',dt=dt)
 
-P.run_on_event('b_spike','refr_b= 3*ms')
+sensillum.run_on_event('b_spike','refr_b= 3*ms')
 
 # Initialization
-P.v_a = 'El + (randn() * 5 - 5)*mV'
-P.m_a= 0.0
-P.h_a= 1.0
-P.n_a= 0.0
-P.v_b = 'El + (randn() * 5 - 5)*mV'
-P.m_b= 0.0
-P.h_b= 1.0
-P.n_b= 0.0
-P.refr_b= 0*ms
+sensillum.v_a = 'El + (randn() * 5 - 5)*mV'
+sensillum.m_a= 0.0
+sensillum.h_a= 1.0
+sensillum.n_a= 0.0
+sensillum.v_b = 'El + (randn() * 5 - 5)*mV'
+sensillum.m_b= 0.0
+sensillum.h_b= 1.0
+sensillum.n_b= 0.0
+sensillum.refr_b= 0*ms
 
-# Record a few traces
-spikeA = SpikeMonitor(P)
-spikeB = EventMonitor(P,'b_spike')
 
-trace = StateMonitor(P, ('v_a','v_b','v_sl'), record= [0])
-for i in range(20):
-    #I_off= I_base + i*0.05*namp
-    conc_a= 10**(-(20-i)/4)
-    run(3.5 * second, report='text')
-    #_off= I_base
-    conc_b= 10**-1
-    run(1 * second, report='text')
-    conc_b= 0.0
-    run(0.5 * second, report='text')
-    conc_a= 0.0
-    run(5 * second, report='text')
-figure()
-plot(trace.t/ms, trace[0].v_sl/mV,lw=0.2)
-xlabel('t (ms)')
-ylabel('"LFP" (mV)')
-savefig('lfp',dpi=600)
-
-#plot(trace.t/ms, trace[0].v_a/mV)
-#plot(trace.t/ms, trace[0].v_b/mV)
-#xlabel('t (ms)')
-#ylabel('v_a, v_b (mV)')
-#figure()
-#plot(trace.t/ms, trace[0].M_a)
-#plot(trace.t/ms, trace[0].M_b)
-
-figure()
-scatter(spikeA.t/ms,spikeA.i)
-scatter(spikeB.t/ms,spikeB.i+1)
-
-sdf_a= sdf(spikeA.t/ms,0.0,2e5,2,100)
-sdf_b= sdf(spikeB.t/ms,0.0,2e5,2,100)
-
-figure()
-plot(sdf_a,lw=0.2)
-plot(sdf_b,lw=0.2)
-xlabel('t (ms)')
-ylabel('f_a, f_b (Hz)')
-savefig('sdfs',dpi=600)
-show()
