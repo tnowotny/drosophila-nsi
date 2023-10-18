@@ -19,9 +19,9 @@ trace = StateMonitor(sensillum, ('v_a','v_b','v_sl'), record= [0])
 # run a little to get away from initial artefacts
 run(2.5 * second, report='text')
 # Loop over a few trials
-for i in range(20):
+for i in range(5):
     #I_off= I_base + i*0.05*namp
-    conc_a= 10**(-(20-i)/4)
+    conc_a= 10**(-(5-i))
     run(3.5 * second, report='text')
     #_off= I_base
     conc_b= 10**-1

@@ -51,13 +51,13 @@ I_off= I_base
 VT = -65*mV
 
 # Adaptation M-current parameters
-pM1 = 0.1
+pM1 = 0.02
 pM2 = 0*mV
 pM3 = 10*mV
-pM4 = 0.001
+pM4 = 0.0018
 pM5 = -30*mV
 pM6 = -10*mV
-g_M= 6e-5*msiemens
+g_M= 2e-4*msiemens
 
 # receptor current parameters
 cmid= -1.5  # log10 concentration of mid-activation
@@ -69,7 +69,7 @@ conc_a= 0
 conc_b= 0
 
 # sensillum parameters
-gl_sl = 0.01*msiemens
+gl_sl = 0.02*msiemens
 El_sl = -30*mV
 Cm_sl = 100*nfarad
 
