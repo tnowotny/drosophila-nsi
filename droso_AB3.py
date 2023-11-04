@@ -100,7 +100,7 @@ dv_b/dt = (gl*(El-v_b)-
          g_na*(m_b*m_b*m_b)*h_b*(v_b-ENa)-
          g_kd*(n_b*n_b*n_b*n_b)*(v_b-EK)-
          g_M*M_b*(v_b-EK)-
-         g_r*s_r_b*(v_a-ENa-v_sl)+I_off+I_noise*xi_b)/Cm : volt
+         g_r*s_r_b*(v_b-ENa-v_sl)+I_off+I_noise*xi_b)/Cm : volt
 dm_b/dt = alpha_m_b*(1-m_b)-beta_m_b*m_b : 1
 dn_b/dt = alpha_n_b*(1-n_b)-beta_n_b*n_b : 1
 dh_b/dt = alpha_h_b*(1-h_b)-beta_h_b*h_b : 1
