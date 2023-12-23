@@ -1,4 +1,4 @@
-from droso_AB3 import *
+from droso_AB3_asym import *
 
 # make experiment folder
 expt = 'conc_pulse'
@@ -15,7 +15,7 @@ if isExist:
     exit()  
 
 # save config
-# shutil.copy('droso_AB3.py', path)
+# shutil.copy('droso_AB3_asym.py', path)
 # shutil.copy((expt + '.py'), path)
 
 # Record spikes
