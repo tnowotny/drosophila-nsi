@@ -29,7 +29,7 @@ trace = StateMonitor(sensillum, ('s_r_a','s_r_b','v_a','v_b','v_sl','M_a','M_b')
 m_conc = 9  # minimum concentration 10^-
 s_conc = 2  # concentration step size
 trials = 4 # trials / concentration steps
-pulse  = 3  # pulse length (s)
+pulse  = 5  # pulse length (s)
 clean  = 5  # time between pulses (s)
 
 x = 5 + ((pulse+clean)*2)*trials
