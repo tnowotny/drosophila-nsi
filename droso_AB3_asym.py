@@ -4,38 +4,6 @@ import numpy as np
 import os
 import shutil
 
-def sdf(sT, t0= None, tmax= None, dt= 1.0, sigma= 50.0):
-    if t0 is None:
-        t0= np.min(sT)
-    if tmax is None:
-        tmax= np.max(sT)
-    tleft= t0-4*sigma
-    tright= tmax+4*sigma
-    n= int((tright-tleft)/dt)
-    sdf= np.zeros(n)
-    kwdt= 3*sigma
-    i= 0
-    x= np.arange(-kwdt,kwdt,dt)
-    x= np.exp(-np.power(x,2)/(2*sigma*sigma))
-    x= x/(sigma*np.sqrt(2.0*np.pi))*1000.0
-    if sT is not None:
-        for t in sT:
-            if (t > t0 and t < tmax): 
-                left= int(np.floor((t-tleft-kwdt)/dt))
-                right= int(np.floor((t-tleft+kwdt)/dt))
-                if left > 0 and right <= n:
-                    sdf[left:right]+=x
-
-    t= np.arange(t0, tmax, dt)
-    start= int(4*sigma/dt)
-    stop= start+len(t)
-    the_sdf= {
-        "t": t,
-        "sdf": sdf[start:stop]
-    }
-    return the_sdf
-
-
 # Basic neuron Parameters
 
 Cm = 1*nfarad

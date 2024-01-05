@@ -31,8 +31,6 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
     if resfile is not None:
         for xi in x:
             resfile.write(f"{str(xi)} ")
-        resfile.write("\n")
-        resfile.flush()
     pdict= {
         'pM1': x[0],
         'pM2': x[1]*mV,
@@ -48,6 +46,8 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
     net.set_states({'sensillum': pdict})
     net.store()
     y= []
+    if plot:
+        plt.figure()
     for i in range(reps):
         net.run(p["tin"])
         net.set_states({'sensillum': {"conc_a": conc[i]}})
@@ -57,10 +57,8 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
         sT= net.get_states()["spikeA"]["t"]
         rsdf= sdf(sT/ms,t0= 0.0, tmax= (p["tin"]+p["tdur"]+p["tout"])/ms, dt=10.0, sigma=50.0)
         if plot: 
-            plt.figure()
             plt.plot(trg_sdf[i])
             plt.plot(rsdf["sdf"])
-            plt.show()
         y.append(trg_sdf[i]-rsdf["sdf"][:len(trg_sdf[i])])
         net.restore()
     y= np.hstack(y)
@@ -68,18 +66,20 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
         plt.figure()
         plt.plot(y)
         plt.show()
-    return np.linalg.norm(y)
+    err= np.linalg.norm(y)
+    if resfile is not None:
+        resfile.write(f"{err}\n")
+        resfile.flush()        
+    return err
 
-x0= [0.04, 20, 7, 0.001, -30, -4, 6e-4, -4.1, 1, 8e-4 ]
-x0= [ 4.45576823e-02,  1.97754105e+01,  7.72403686e+00,  8.81060655e-04,
-      -3.16846927e+01, -3.96995493e+00,  7.20920868e-04, -3.87542241e+00,
-      8.85426537e-01,  7.00704966e-04 ]
-bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002), (-40,-20), (-5,-3), (3e-4,1.2e-3),
-          (-6.0, -2.0), (0.5, 2), (2e-4, 3e-3) ]
+x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
+x0= [ 0.04085458101661702, 23.324173009601324, 6.467984263287498, 0.001005189468563782, -32.19489404645946, -4.247262362895521, 0.000970760277054877, -3.071751510549535, 0.7533306082531139, 0.0012243353684708985, 660.4355835454747 ]
+bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002), (-40,-20), (-5,-3), (3e-4,5e-3),
+          (-6.0, -2.0), (0.5, 2), (2e-4, 8e-3) ]
 
 # For quick test of a parameter combination
-#fit_fun(x0, trg_sdf, the_conc, net, p, None, plot= True)
-#exit(1)
+fit_fun(x0, trg_sdf, the_conc, net, p, None, plot= True)
+exit(1)
 
 resfile= open("fit_trajectory.txt","w")
 # For actual fitting
