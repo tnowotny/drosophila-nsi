@@ -68,11 +68,11 @@ def fit_fun(x):
 if __name__ == '__main__':
     resfile= open("fit_trajectory_PSO.txt","w")
     x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
-    bound_low= [ 0.02,  10,  5, 0.0005, -40, -5, 3e-4, -6.0, 0.5,  2e-4 ]
-    bound_high= [ 0.08, 30, 9, 0.002, -20, -3, 5e-3, -2.0, 2, 8e-3]
+    bound_low= [ 0.03,  10,  5, 0.0007, -40, -5, 3e-4, -6.0, 0.5,  2e-4 ]
+    bound_high= [ 0.06, 30, 9, 0.0015, -20, -3, 5e-3, -2.0, 2, 8e-3]
 
     from sko.PSO import PSO
-    pso = PSO(func=fit_fun, n_dim=10, pop=40, max_iter=150, lb=bound_low, ub=bound_high, w=0.8, c1=0.5, c2=0.5)
+    pso = PSO(func=fit_fun, n_dim=10, pop=1000, max_iter=150, lb=bound_low, ub=bound_high, w=0.8, c1=0.5, c2=0.5)
     pso.run()
     print('best_x is ', pso.gbest_x, 'best_y is', pso.gbest_y)
     resfile.close()
