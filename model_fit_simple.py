@@ -75,8 +75,9 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
 
 if __name__ == '__main__':
     x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
-    bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002), (-40,-20), (-5,-3), (3e-4,5e-3),
-          (-6.0, -2.0), (0.5, 2), (2e-4, 8e-3) ]
+    bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002),
+              (-40,-20), (-5,-3), (3e-4,5e-3), (-6.0, -2.0),
+              (0.5, 2), (2e-4, 8e-3) ]
 
     resfile= open("fit_trajectory.txt","w")
     res_lsq= minimize(fit_fun,x0, args=(trg_sdf,the_conc,net,p,resfile),bounds=bounds,method='Nelder-Mead',options={'xatol': 1e-4})

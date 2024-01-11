@@ -23,7 +23,6 @@ p= {
     "tdur": 5.0*second,
     "tout": (time[-1]-5.0)*second
 }
-resfile= open("fit_trajectory_PSO.txt","w")
 
 def fit_fun(x):
     reps= len(the_conc)
@@ -67,6 +66,7 @@ def fit_fun(x):
     return err
 
 if __name__ == '__main__':
+    resfile= open("fit_trajectory_PSO.txt","w")
     x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
     bound_low= [ 0.02,  10,  5, 0.0005, -40, -5, 3e-4, -6.0, 0.5,  2e-4 ]
     bound_high= [ 0.08, 30, 9, 0.002, -20, -3, 5e-3, -2.0, 2, 8e-3]
