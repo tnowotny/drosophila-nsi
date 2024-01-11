@@ -72,18 +72,14 @@ def fit_fun(x, trg_sdf, conc, net, p, resfile, plot= False):
         resfile.flush()        
     return err
 
-x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
-x0= [ 0.04085458101661702, 23.324173009601324, 6.467984263287498, 0.001005189468563782, -32.19489404645946, -4.247262362895521, 0.000970760277054877, -3.071751510549535, 0.7533306082531139, 0.0012243353684708985, 660.4355835454747 ]
-bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002), (-40,-20), (-5,-3), (3e-4,5e-3),
+
+if __name__ == '__main__':
+    x0= [0.04, 20, 7, 0.001, -30, -4, 1e-3, -4.1, 1, 1e-3 ]
+    bounds= [ (0.02, 0.08), (10, 30), (5,9), (0.0005,0.002), (-40,-20), (-5,-3), (3e-4,5e-3),
           (-6.0, -2.0), (0.5, 2), (2e-4, 8e-3) ]
 
-# For quick test of a parameter combination
-fit_fun(x0, trg_sdf, the_conc, net, p, None, plot= True)
-exit(1)
+    resfile= open("fit_trajectory.txt","w")
+    res_lsq= minimize(fit_fun,x0, args=(trg_sdf,the_conc,net,p,resfile),bounds=bounds,method='Nelder-Mead',options={'xatol': 1e-4})
 
-resfile= open("fit_trajectory.txt","w")
-# For actual fitting
-res_lsq= minimize(fit_fun,x0, args=(trg_sdf,the_conc,net,p,resfile),bounds=bounds,method='Nelder-Mead',options={'xatol': 1e-5})
-
-print(res_lsq)
-resfile.close()
+    print(res_lsq)
+    resfile.close()
