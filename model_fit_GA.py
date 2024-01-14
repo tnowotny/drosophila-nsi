@@ -13,6 +13,6 @@ if __name__ == '__main__':
 
     from sko.GA import GA
     ga = GA(func=fit_fun, n_dim=10, size_pop=40, max_iter=150, lb=bound_low, ub=bound_high, prob_mut= 0.001)
-    best_x, best_y = ga.run()
-    print('best_x is ', best_x, 'best_y is', best_y)
+    ga.run()
+    print('best_x is ', ga.best_x, 'best_y is', ga.best_y)
     resfile.close()

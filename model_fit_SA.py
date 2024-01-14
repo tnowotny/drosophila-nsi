@@ -12,7 +12,7 @@ if __name__ == '__main__':
               (0.5, 2), (2e-4, 8e-3) ]
 
     resfile= open("fit_trajectory_SA.txt","w")
-    res_sa= dual_annealing(fit_fun,bounds=bounds, args=(trg_sdf,the_conc,net,p,resfile),x0=x0,maxfun=1000000)
+    res_sa= dual_annealing(fit_fun,bounds=bounds, args=(trg_sdf,the_conc,net,p,resfile),x0=x0,visit=1.5,maxfun=1000000,minimizer_kwargs={"method": "Nelder-Mead","options": {"maxfev": 100}})
 
     print(res_sa)
     resfile.close()
