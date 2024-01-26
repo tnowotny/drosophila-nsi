@@ -4,7 +4,6 @@ import numpy as np
 import os
 import shutil
 
-
 # Basic neuron Parameters
 
 Cm = 1*nfarad
