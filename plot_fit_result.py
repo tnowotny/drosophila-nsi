@@ -5,5 +5,5 @@ x01 = [ 4.71839264e-02,  2.99597729e+01,  8.62016465e+00,  9.97327062e-04, -2.82
 # result of a really long dual_simulated annealing run
 x02 = [  4.139e-02,  2.700e+01,  5.447e+00,  1.087e-03, -2.919e+01,
            -3.545e+00,  9.343e-04, -3.077e+00,  7.574e-01,  1.020e-03 ]
-fit_fun(x02, trg_sdf, the_conc, net, p, None, plot= True)
+fit_fun(x00, trg_sdf, the_conc, net, p, None, plot= True)
 plt.show()
