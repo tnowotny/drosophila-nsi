@@ -18,10 +18,8 @@ def sdf(sT, t0= None, tmax= None, dt= 1.0, sigma= 50.0):
         for t in sT:
             if (t > t0 and t < tmax): 
                 left= int((t-tleft-kwdt)/dt)
-                right= int((t-tleft+kwdt)/dt)
-                if left >= 0 and right <= n:
-                    sdf[left:right]+=x[:(right-left)]
-
+                if left > 0 and left+len(x) < n:
+                    sdf[left:left+len(x)] += x
     t= np.arange(t0, tmax, dt)
     start= int(4*sigma/dt)
     stop= start+len(t)
