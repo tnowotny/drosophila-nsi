@@ -1,4 +1,4 @@
-from droso_AB3_asym_fit import *
+from droso_AB3_fit import *
 from utils import *
 import numpy as np
 import matplotlib.pyplot as plt
